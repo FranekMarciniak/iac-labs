@@ -17,67 +17,62 @@ jobs:
         working-directory: ./example-app
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
           python-version: "3.11"
-      - name: Install Poetry Action
+
+      - name: Install Poetry
         uses: snok/install-poetry@v1.3.4
         with:
           poetry-version: "latest"
-      - name: Configure Poetry in PATH
-        run: echo "${{ steps.install-poetry.outputs.poetry-executable }}" >> $GITHUB_PATH
-      - name: Cache build venv
-        id: cached-poetry-dependencies
+
+      # Restore cache if available
+      - name: Cache build venv and Poetry cache
         uses: actions/cache@v3
         with:
-          path: /home/runner/work/example-app/example-app/.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+          path: |
+            .venv
+            ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
       - name: Install dependencies
         run: poetry install --no-root
 
   static-code-tests:
     runs-on: ubuntu-latest
+    needs: dependencies
     defaults:
       run:
         working-directory: ./example-app
-    needs: dependencies
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
           python-version: "3.11"
-      - name: Cache build venv
-        id: cached-poetry-dependencies
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3.4
+        with:
+          poetry-version: "latest"
+
+      # Restore the same cache key from the dependencies job
+      - name: Restore build venv and Poetry cache
         uses: actions/cache@v3
         with:
-          path: /home/runner/work/example-app/example-app/.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
+          path: |
+            .venv
+            ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+
       - name: Run linter
         run: poetry run task lint
+
       - name: Run formatter
         run: poetry run task formatter
+
       - name: Run security checks
         run: poetry run task security
-
-  unit-tests:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./example-app
-    needs: dependencies
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.11"
-      - name: Cache build venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v3
-        with:
-          path: /home/runner/work/example-app/example-app/.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/poetry.lock') }}
-      - name: Run unit tests
-        run: poetry run task test
