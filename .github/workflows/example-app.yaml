@@ -64,6 +64,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Poetry
+        uses: snok/install-poetry@v1.3.4
+        with:
+          poetry-version: "latest"
+
       - name: Restore cache
         uses: actions/cache@v3
         with:
