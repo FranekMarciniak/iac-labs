@@ -22,6 +22,7 @@ jobs:
     defaults:
       run:
         working-directory: ./example-app
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -30,13 +31,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Poetry (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Install Poetry (Linux)
-        if: runner.os == 'Linux'
+      - name: Install Poetry
         uses: snok/install-poetry@v1.3.4
         with:
           poetry-version: "latest"
@@ -60,6 +55,7 @@ jobs:
     defaults:
       run:
         working-directory: ./example-app
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -92,6 +88,7 @@ jobs:
     defaults:
       run:
         working-directory: ./example-app
+        shell: bash
     steps:
       - uses: actions/checkout@v4
 
@@ -100,13 +97,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Poetry (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-
-      - name: Install Poetry (Linux)
-        if: runner.os == 'Linux'
+      - name: Install Poetry
         uses: snok/install-poetry@v1.3.4
         with:
           poetry-version: "latest"
