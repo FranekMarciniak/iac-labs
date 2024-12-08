@@ -28,14 +28,12 @@ jobs:
         with:
           poetry-version: "latest"
 
-      # Restore cache if available
-      - name: Cache build venv and Poetry cache
+      - name: Cache build venv
+        id: cached-poetry-dependencies
         uses: actions/cache@v3
         with:
-          path: |
-            .venv
-            ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          path: /home/runner/work/<path>/example-app/.venv
+          key: ${{ runner.os }}-venv
 
       - name: Install dependencies
         run: poetry install --no-root
@@ -54,19 +52,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.3.4
-        with:
-          poetry-version: "latest"
-
-      # Restore the same cache key from the dependencies job
-      - name: Restore build venv and Poetry cache
+      - name: Restore cache
         uses: actions/cache@v3
         with:
-          path: |
-            .venv
-            ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          path: .venv
+          key: ${{ runner.os }}-venv
 
       - name: Run linter
         run: poetry run task lint
